@@ -7,12 +7,10 @@ from langchain_core.output_parsers import StrOutputParser
 
 
 def create_qa_chain():
-    # Embeddingi
     embeddings = HuggingFaceEmbeddings(
         model_name="all-MiniLM-L6-v2"
     )
 
-    # Baza
     db = Chroma(
         persist_directory="./chroma_db",
         embedding_function=embeddings
@@ -20,10 +18,8 @@ def create_qa_chain():
 
     retriever = db.as_retriever(search_kwargs={"k": 3})
 
-    # LLM
     llm = Ollama(model="llama3")
 
-    # Prompt (bardzo ważne dla RAG!)
     prompt = ChatPromptTemplate.from_template("""
     Answer the question based ONLY on the context below.
 
@@ -34,7 +30,6 @@ def create_qa_chain():
     {question}
     """)
 
-    # RAG pipeline (LCEL)
     def format_docs(docs):
         return "\n\n".join(doc.page_content for doc in docs)
 

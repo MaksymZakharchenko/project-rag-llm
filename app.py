@@ -14,22 +14,19 @@ st.set_page_config(page_title="AI Document Assistant")
 
 st.title("📄 AI Document Intelligence System")
 
-# ----------------------------
-# 1. Upload PDF
-# ----------------------------
-uploaded_file = st.file_uploader("📤 Wgraj PDF", type=["pdf"])
 
-# ----------------------------
-# 2. Session state (żeby nie budować za każdym kliknięciem)
-# ----------------------------
+# 1. Upload PDF
+uploaded_file = st.file_uploader("📤 Send PDF", type=["pdf"])
+
+
+# 2. Session state
 if "qa_ready" not in st.session_state:
     st.session_state.qa_ready = False
 
 if uploaded_file and not st.session_state.qa_ready:
 
-    with st.spinner("🔄 Przetwarzam PDF..."):
+    with st.spinner("🔄 Analizing PDF..."):
 
-        # zapis tymczasowy pliku
         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
             tmp_file.write(uploaded_file.read())
             pdf_path = tmp_file.name
@@ -94,22 +91,20 @@ if uploaded_file and not st.session_state.qa_ready:
 
         os.remove(pdf_path)
 
-        st.success("✅ PDF gotowy! Możesz zadawać pytania.")
+        st.success("✅ PDF is ready! You can ask something.")
 
-# ----------------------------
-# 3. Chat / pytania
-# ----------------------------
+# 3. Chat 
 if st.session_state.qa_ready:
 
-    query = st.text_input("❓ Zadaj pytanie do dokumentu")
+    query = st.text_input("Ask the document")
 
-    if st.button("Szukaj"):
+    if st.button("Search"):
         if query:
             result, docs = st.session_state.qa_chain(query)
 
-            st.write("### 🧠 Odpowiedź")
+            st.write("### 🧠 Answer")
             st.write(result)
 
-            st.write("### 📚 Źródła")
+            st.write("### 📚 Source")
             for d in docs:
-                st.write(d.page_content[:300])
+                st.write(d.page_content[:100])
